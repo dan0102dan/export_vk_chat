@@ -2,5 +2,8 @@
   "type": "module",
   "devDependencies": {
     "eslint": "^7.27.0"
+  },
+  "dependencies": {
+    "axios": "^0.24.0"
   }
 }
