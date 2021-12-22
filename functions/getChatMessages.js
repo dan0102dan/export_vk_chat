@@ -34,6 +34,6 @@ export default async function (user_id) {
 		canContinue = chat?.items?.length > 0
 	}
 
-	fs.writeFileSync(`${path}/_chat.txt`, messages.join('\n'))
+	fs.writeFileSync(`${path}/_chat.txt`, messages.reverse().join('\n'))
 	console.log('все')
 }
