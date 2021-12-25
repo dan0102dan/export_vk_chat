@@ -4,7 +4,7 @@ import axios from 'axios'
 export default async function (attachments, path) {
 	const files = []
 
-	for (const attachment of attachments) {
+	for (const attachment of attachments)
 		switch (attachment.type) {
 			case 'photo': {
 				const prop = Object.keys(attachment.photo).map(e => e.split('_')).filter(e => Number(e[1])).sort((a, b) => Number(b[1]) - Number(a[1]))[0].join('_')
@@ -65,9 +65,8 @@ export default async function (attachments, path) {
 				// console.log('пока не научился', attachment)
 				break
 		}
-	}
 
-	for (const file of files) {
+	for (const file of files)
 		try {
 			const stream = fs.createWriteStream(`${path}/${file.name}`)
 			await axios({
@@ -86,7 +85,6 @@ export default async function (attachments, path) {
 		} catch {
 			continue
 		}
-	}
 
 	return files
 }
