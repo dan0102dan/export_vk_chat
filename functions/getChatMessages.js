@@ -5,7 +5,7 @@ export default async function (user_id) {
 	const path = `${process.cwd()}/${user_id}`
 	fs.mkdirSync(path, { recursive: true }) // создаём папку, куда будем кидать все данные)
 
-	const messages = []
+	const messages = fs.createWriteStream(`${path}/_chat.txt`)
 	let canContinue = true, offset = 0
 
 	while (canContinue) {
@@ -13,6 +13,7 @@ export default async function (user_id) {
 			params: {
 				user_id,
 				count: 200,
+				rev: 1,
 				offset
 			}
 		})
@@ -22,11 +23,11 @@ export default async function (user_id) {
 			const date = `[${String(message.date.getDate()).padStart(2, '0')}.${String(message.date.getMonth()).padStart(2, '0')}.${message.date.getFullYear()}, ${String(message.date.getHours()).padStart(2, '0')}:${String(message.date.getSeconds()).padStart(2, '0')}:${String(message.date.getMilliseconds()).padStart(2, '0')}]`
 
 			if (message.body?.length > 0)
-				messages.push(`${date} ${message.from_id === user_id ? 'Собеседник' : 'You'}: ` + message.body + '\n')
+				messages.write(`${date} ${message.from_id === user_id ? 'Собеседник' : 'You'}: ` + message.body + '\n')
 			if (message.attachments?.length > 0) {
 				const files = await getAttachment(message.attachments, path)
 				for (const file of files)
-					messages.push(`${date} ${message.from_id === user_id ? 'Собеседник' : 'You'}: ` + `<attached: ${file.name}>` + '\n')
+					messages.write(`${date} ${message.from_id === user_id ? 'Собеседник' : 'You'}: ` + `<attached: ${file.name}>` + '\n')
 			}
 		}
 
@@ -34,6 +35,5 @@ export default async function (user_id) {
 		canContinue = chat?.items?.length > 0
 	}
 
-	fs.writeFileSync(`${path}/_chat.txt`, messages.reverse().join('\n'))
 	console.log('все')
 }
