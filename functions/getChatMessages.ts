@@ -1,4 +1,4 @@
-import { API, getAttachment } from './index.js'
+import { API, getAttachment } from './index'
 import fs from 'fs'
 
 export default async function (user_id) {

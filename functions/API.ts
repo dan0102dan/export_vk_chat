@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { access_token } from '../config.js'
+import { access_token } from '../config'
 
 export default axios.create({
 	baseURL: 'https://api.vk.com',
