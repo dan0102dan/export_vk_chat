@@ -8,6 +8,7 @@ export default axios.create({
 	},
 	params: {
 		lang: 'ru',
+		v: '5.131',
 		access_token
 	}
 })

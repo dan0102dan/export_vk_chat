@@ -1,17 +1,17 @@
 import fs from 'fs'
 import axios from 'axios'
 
-export default async function (attachments, path) {
+export default async (attachments, path) => {
 	const files = []
 
-	for (const attachment of attachments)
+	for (const attachment of attachments) {
+		console.log(attachment)
 		switch (attachment.type) {
 			case 'photo': {
-				const prop = Object.keys(attachment.photo).map(e => e.split('_')).filter(e => Number(e[1])).sort((a, b) => Number(b[1]) - Number(a[1]))[0].join('_')
-				if (attachment?.photo[prop])
+				if (attachment.photo?.orig_photo?.url)
 					files.push({
 						name: `photo_${attachment.photo.id}.jpg`,
-						link: attachment.photo[prop]
+						link: attachment.photo.orig_photo.url
 					})
 				break
 			}
@@ -36,11 +36,10 @@ export default async function (attachments, path) {
 				break
 			}
 			case 'sticker': {
-				const prop = Object.keys(attachment.sticker).map(e => e.split('_')).filter(e => Number(e[1])).sort((a, b) => Number(b[1]) - Number(a[1]))[0].join('_')
-				if (attachment?.sticker[prop])
+				if (attachment.sticker?.images?.url?.at(-1))
 					files.push({
 						name: `sticker_${attachment.sticker.id}.png`,
-						link: attachment.sticker[prop]
+						link: attachment.sticker.images.url.at(-1)
 					})
 				break
 			}
@@ -56,35 +55,36 @@ export default async function (attachments, path) {
 			case 'doc': {
 				if (attachment.doc?.url)
 					files.push({
-						name: `${attachment.doc.title} (doc).${attachment.doc.ext}`,
+						name: `${attachment.doc.title}_document.${attachment.doc.ext}`,
 						link: attachment.doc.url
 					})
 				break
 			}
 			default:
-				// console.log('пока не научился', attachment)
+				console.log('New type of data, create an issue if its important!', attachment)
 				break
 		}
 
-	for (const file of files)
-		try {
-			const stream = fs.createWriteStream(`${path}/${file.name}`)
-			await axios({
-				url: file.link,
-				method: 'GET',
-				responseType: 'stream'
-			})
-				.then(response =>
-					new Promise((resolve, reject) => {
-						response.data.pipe(stream)
+		for (const file of files)
+			try {
+				const stream = fs.createWriteStream(`${path}/${file.name}`)
+				await axios({
+					url: file.link,
+					method: 'GET',
+					responseType: 'stream'
+				})
+					.then(response =>
+						new Promise((resolve, reject) => {
+							response.data.pipe(stream)
 
-						stream.on('error', reject)
-						stream.on('close', resolve)
-					})
-				)
-		} catch {
-			continue
-		}
+							stream.on('error', reject)
+							stream.on('close', resolve)
+						})
+					)
+			} catch {
+				continue
+			}
+	}
 
 	return files
 }
