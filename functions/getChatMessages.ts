@@ -35,5 +35,5 @@ export default async function (user_id) {
 		canContinue = chat?.items?.length > 0
 	}
 
-	console.log('все')
+	console.log('Complete! Saved folder: ', path)
 }
